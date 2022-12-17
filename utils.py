@@ -91,13 +91,6 @@ def writeResults(text: str):
 def printInfoMes(bot:str):
     prYellow("ℹ️ " +bot+ " is starting soon... ")
 
-def donate(self):
-    prYellow('If you like the project, please support me so that i can make more such projects, thanks!')
-    try:
-        self.driver.get('https://commerce.coinbase.com/checkout/923b8005-792f-4874-9a14-2992d0b30685')
-    except Exception as e:
-        prRed("Error in donate: " +str(e))
-
 class LinkedinUrlGenerate:
     def generateUrlLinks(self):
         path = []

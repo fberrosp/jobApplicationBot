@@ -170,7 +170,5 @@ geckodriver.log
 *.txt
 *.exe
 
-# premium files
-angelco.py
-globalLogicCode.py
-linkedinProCode.py
+#Mac
+**/.DS_Store

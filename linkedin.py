@@ -114,8 +114,6 @@ class Linkedin:
             prYellow("Category: " + urlWords[0] + "," +urlWords[1]+ " applied: " + str(countApplied) +
                   " jobs out of " + str(countJobs) + ".")
         
-        utils.donate(self)
-
     def getJobProperties(self, count):
         textToWrite = ""
         jobTitle = ""
