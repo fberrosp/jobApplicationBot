@@ -23,15 +23,15 @@ location = ["United States"]
 # keywords related with your job search
 keywords = ["Software Engineer"]
 #job experience Level - ex:  ["Internship", "Entry level" , "Associate" , "Mid-Senior level" , "Director" , "Executive"]
-experienceLevels = [ "" ]
+experienceLevels = ["Internship", "Entry level" , "Associate" , "Mid-Senior level" , "Director" , "Executive"]
 #job posted date - ex: ["Any Time", "Past Month" , "Past Week" , "Past 24 hours"] - select only one
-datePosted = [""]
+datePosted = ["Any Time"]
 #job type - ex:  ["Full-time", "Part-time" , "Contract" , "Temporary", "Volunteer", "Intership", "Other"]
 jobType = ["Full-time", "Contract"]
 #remote  - ex: ["On-site" , "Remote" , "Hybrid"]
 remote = ["Remote"]
 #salary - ex:["$40,000+", "$60,000+", "$80,000+", "$100,000+", "$120,000+", "$140,000+", "$160,000+", "$180,000+", "$200,000+" ] - select only one
-salary = [ ""]
+salary = [""]
 #sort - ex:["Recent"] or ["Relevent"] - select only one
 sort = ["Relevant"]
 #Blacklist companies you dont want to apply - ex: ["Apple","Google"]
