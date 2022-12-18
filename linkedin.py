@@ -1,5 +1,6 @@
 import time,math,random,os
 import utils,constants,config
+import json
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -8,7 +9,7 @@ from utils import prRed,prYellow,prGreen
 from webdriver_manager.chrome import ChromeDriverManager
 
 class Linkedin:
-    def __init__(self):
+    def __init__(self, credentials):
         try:
             self.driver = webdriver.Chrome(ChromeDriverManager().install())
             self.driver.get("https://www.linkedin.com/login?trk=guest_homepage-basic_nav-header-signin")
@@ -16,9 +17,9 @@ class Linkedin:
         except Exception as e:
             prRed("Warning ChromeDriver"+ str(e))
         try:    
-            self.driver.find_element("id","username").send_keys(config.email)
+            self.driver.find_element("id","username").send_keys(credentials["email"])
             time.sleep(5)
-            self.driver.find_element("id","password").send_keys(config.password)
+            self.driver.find_element("id","password").send_keys(credentials["password"])
             time.sleep(5)
             self.driver.find_element("xpath",'//*[@id="organic-div"]/form/div[3]/button').click()
         except:
@@ -208,7 +209,13 @@ class Linkedin:
             prRed("Error in DisplayWriteResults: " +str(e))
 
 
-start = time.time()
-Linkedin().linkJobApply()
-end = time.time()
-prYellow("---Took: " + str(round((time.time() - start)/60)) + " minute(s).")
+if __name__ == '__main__':
+
+    with open('credentials.json') as credentials_file:
+        credentials = json.load(credentials_file)
+
+    bot = Linkedin(credentials)
+    start = time.time()
+    bot.linkJobApply()
+    end = time.time()
+    prYellow("---Took: " + str(round((time.time() - start)/60)) + " minute(s).")
