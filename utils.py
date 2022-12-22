@@ -1,6 +1,7 @@
 import math,constants,config
 from typing import List
 import time
+import csv
 
 from selenium.webdriver.firefox.options import Options
 
@@ -65,16 +66,18 @@ def urlToKeywords(url: str) -> List[str]:
     return [keyword,location]
 
 def writeResults(text: str):
-    timeStr = time.strftime("%Y%m%d")
+    timeStr = time.strftime("%Y-%m-%d")
     fileName = "Applied Jobs DATA - " +timeStr + ".txt"
     try:
+        # read data and add already applied jobs
         with open("data/" +fileName, encoding="utf-8" ) as file:
             lines = []
             for line in file:
                 if "----" not in line:
                     lines.append(line)
-                
-        with open("data/" +fileName, 'w' ,encoding="utf-8") as f:
+        
+        # write new jobs
+        with open("data/" +fileName, 'w', encoding="utf-8") as f:
             f.write("---- Applied Jobs Data ---- created at: " +timeStr+ "\n" )
             f.write("---- Number | Job Title | Company | Location | Work Place | Posted Date | Applications | Result "   +"\n" )
             for line in lines: 
@@ -82,11 +85,29 @@ def writeResults(text: str):
             f.write(text+ "\n")
             
     except:
+        # file does not exist, write new jobs
         with open("data/" +fileName, 'w', encoding="utf-8") as f:
             f.write("---- Applied Jobs Data ---- created at: " +timeStr+ "\n" )
             f.write("---- Number | Job Title | Company | Location | Work Place | Posted Date | Applications | Result "   +"\n" )
 
             f.write(text+ "\n")
+
+def writeCSV(csvName: list, csvData: list):
+    timeStr = time.strftime("%Y-%m-%d")
+    fileName = timeStr + '_' + csvName[0] + '_' + csvName[1] + '.csv' #Date_Keyword_Location
+    try:
+
+        with open("data/" + fileName, 'a', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            #writer.writerow(appliedData)
+            writer.writerow(csvData)
+    except:
+        with open("data/" + fileName, 'w', encoding='utf-8') as f:
+            csv.writer(f).writerow(csvData)
+        
+    #separate csvs by date and keyword
+    #new filename should be date and keyword
+    
 
 def printInfoMes(bot:str):
     prYellow("ℹ️ " +bot+ " is starting soon... ")

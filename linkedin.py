@@ -52,6 +52,7 @@ class Linkedin:
             totalPages = utils.jobsToPages(totalJobs)
 
             urlWords =  utils.urlToKeywords(url)
+            csvName = [urlWords[0], urlWords[1]] #[keyword, location]
             lineToWrite = "\n Category: " + urlWords[0] + ", Location: " +urlWords[1] + ", Applying " +str(totalJobs)+ " jobs."
             self.displayWriteResults(lineToWrite)
 
@@ -74,12 +75,16 @@ class Linkedin:
                     time.sleep(random.uniform(1, constants.botSpeed))
 
                     countJobs += 1
+                    callJobProperties = self.getJobProperties(countJobs)
+                    jobProperties = callJobProperties[0]
 
-                    jobProperties = self.getJobProperties(countJobs)
                     if "blacklisted" in jobProperties: 
                         lineToWrite = jobProperties + " | " + "* 🤬 Blacklisted Job, skipped!: " +str(offerPage)
                         self.displayWriteResults(lineToWrite)
-                    else :                    
+
+                        callJobProperties[1].extend([False, "Blacklisted", str(offerPage)]) # [properties, Applied, Reason, Link]
+                        self.writeCsvData(csvName, callJobProperties[1])
+                    else :
                         button = self.easyApplyButton()
 
                         if button is not False:
@@ -93,6 +98,9 @@ class Linkedin:
                                 lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: "  +str(offerPage)
                                 self.displayWriteResults(lineToWrite)
 
+                                callJobProperties[1].extend([True, "Applied", str(offerPage)]) # [properties, Applied, Reason, Link]
+                                self.writeCsvData(csvName, callJobProperties[1])
+
                             except:
                                 try:
                                     self.driver.find_element(By.CSS_SELECTOR,"button[aria-label='Continue to next step']").click()
@@ -101,15 +109,24 @@ class Linkedin:
                                     comPercentage = self.driver.find_element(By.XPATH,'html/body/div[3]/div/div/div[2]/div/div/span').text
                                     percenNumber = int(comPercentage[0:comPercentage.index("%")])
                                     result = self.applyProcess(percenNumber,offerPage)
-                                    lineToWrite = jobProperties + " | " + result
+                                    lineToWrite = jobProperties + " | " + result[0]
                                     self.displayWriteResults(lineToWrite)
+
+                                    callJobProperties[1].extend(result[1]) # [properties, Applied, Reason, Link]
+                                    self.writeCsvData(csvName, callJobProperties[1])
                                 
                                 except Exception as e: 
                                     lineToWrite = jobProperties + " | " + "* 🥵 Cannot apply to this Job! " +str(offerPage)
                                     self.displayWriteResults(lineToWrite)
+
+                                    callJobProperties[1].extend([False, "No Apply", str(offerPage)]) # [properties, Applied, Reason, Link]
+                                    self.writeCsvData(csvName, callJobProperties[1])
                         else:
                             lineToWrite = jobProperties + " | " + "* 🥳 Already applied! Job: " +str(offerPage)
                             self.displayWriteResults(lineToWrite)
+
+                            callJobProperties[1].extend([True, "Already applied", str(offerPage)]) # [properties, Applied, Reason, Link]
+                            self.writeCsvData(csvName, callJobProperties[1])
 
 
             prYellow("Category: " + urlWords[0] + "," +urlWords[1]+ " applied: " + str(countApplied) +
@@ -164,7 +181,8 @@ class Linkedin:
             jobApplications = ""
 
         textToWrite = str(count)+ " | " +jobTitle+  " | " +jobCompany+  " | "  +jobLocation+ " | "  +jobWOrkPlace+ " | " +jobPostedDate+ " | " +jobApplications
-        return textToWrite
+        jobInfo = [count, jobTitle, jobCompany, jobLocation, jobWOrkPlace, jobPostedDate, jobApplications]
+        return [textToWrite, jobInfo]
 
     def easyApplyButton(self):
         try:
@@ -181,7 +199,19 @@ class Linkedin:
         applyPages = math.floor(100 / percentage) 
         result = ""  
         try:
+            resumeUpload = False
             for pages in range(applyPages-2):
+                if not resumeUpload:
+                    try:
+                        #try finding resume button, if found, click it
+                        self.driver.find_element(By.CSS_SELECTOR,"button[aria-label='Choose Resume']").click()
+                        time.sleep(random.uniform(1, constants.botSpeed))
+                        resumeUpload = True
+                    except:
+                        print('Choose Resume button not found yet')
+
+                #check if information is needed before proceding
+                #try catch for resume and select forms (input forms can be 1 by default)
                 self.driver.find_element(By.CSS_SELECTOR,"button[aria-label='Continue to next step']").click()
                 time.sleep(random.uniform(1, constants.botSpeed))
 
@@ -196,18 +226,26 @@ class Linkedin:
             time.sleep(random.uniform(1, constants.botSpeed))
 
             result = "* 🥳 Just Applied to this job: " +str(offerPage)
+            resultArray = [True, "Applied", str(offerPage)] #[applied?, message, link]
         except:
-            # PRO FEATURE! OUTPUT UNANSWERED QUESTIONS, APPLY THEM VIA OPENAI, output them.
             result = "* 🥵 " +str(applyPages)+ " Pages, couldn't apply to this job! Extra info needed. Link: " +str(offerPage)
-        return result
+            resultArray = [False, "Info", str(offerPage)]
+        return [result, resultArray]
 
     def displayWriteResults(self,lineToWrite: str):
         try:
-            print(lineToWrite)
+            #print(lineToWrite)
             utils.writeResults(lineToWrite)
         except Exception as e:
-            prRed("Error in DisplayWriteResults: " +str(e))
+            prRed("Error in DisplayWriteResults: " + str(e))
 
+    def writeCsvData(self, csvName: list, csvData: list):
+        #print(csvName)
+        #print(csvData)
+        try:
+            utils.writeCSV(csvName, csvData)
+        except Exception as e:
+            prRed("Error in writeCsvData: " + str(e))
 
 if __name__ == '__main__':
 
