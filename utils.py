@@ -4,6 +4,8 @@ import config
 from typing import List
 import time
 import csv
+import pandas as pd
+import os
 
 from selenium.webdriver.firefox.options import Options
 
@@ -84,7 +86,7 @@ def writeCSV(csvName: list, csvData: list):
         with open("data/" + fileName, 'x', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow(['Job Count', 'Job Title', 'Company', 'Location', 'Workplace Type',
-                            'Date Posted', 'Applicant Count', 'Applied', 'Reason', 'URL'])
+                            'Date Posted', 'Applicant Count', 'Applied', 'Reason', 'Job ID', 'URL'])
             writer.writerow(csvData)
     except:
         with open("data/" + fileName, 'a', encoding='utf-8') as f:
@@ -94,6 +96,19 @@ def writeCSV(csvName: list, csvData: list):
 
 def printInfoMes(bot: str):
     prYellow("ℹ️ " + bot + " is starting soon... ")
+
+
+def alreadyApplied():
+    path = './data/'
+    csvFiles = [csvFile for csvFile in os.listdir(path)
+                if csvFile.endswith('.csv')]
+    alreadyApplied = set()
+
+    for csvFile in csvFiles:
+        df = pd.read_csv(path + csvFile)
+        alreadyApplied.update(df['Job ID'].unique())
+
+    return alreadyApplied
 
 
 class LinkedinUrlGenerate:

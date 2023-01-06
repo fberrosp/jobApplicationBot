@@ -48,7 +48,7 @@ class Linkedin:
         except:
             prRed("Couldnt generate url, make sure you have /data folder and modified config.py file for your preferances.")
 
-    def linkJobApply(self):
+    def linkJobApply(self, alreadyApplied):
         self.generateUrls()
         countApplied = 0
         countJobs = 0
@@ -75,8 +75,10 @@ class Linkedin:
 
                 offerIds = []
                 for offer in offersPerPage:
-                    offerId = offer.get_attribute("data-occludable-job-id")
-                    offerIds.append(int(offerId.split(":")[-1]))
+                    jobId = offer.get_attribute("data-occludable-job-id")
+                    offerId = int(jobId.split(":")[-1])
+                    if offerId not in alreadyApplied:
+                        offerIds.append(offerId)
 
                 for jobID in offerIds:
                     offerPage = 'https://www.linkedin.com/jobs/view/' + \
@@ -91,7 +93,7 @@ class Linkedin:
 
                         # [properties, Applied, Reason, Link]
                         jobProperties.extend(
-                            [False, "Blacklisted", str(offerPage)])
+                            [False, "Blacklisted", jobID, str(offerPage)])
                         self.writeCsvData(csvName, jobProperties)
                     else:
                         button = self.easyApplyButton()
@@ -108,7 +110,7 @@ class Linkedin:
 
                                 # [properties, Applied, Reason, Link]
                                 jobProperties.extend(
-                                    [True, "Applied", str(offerPage)])
+                                    [True, "Applied", jobID, str(offerPage)])
                                 self.writeCsvData(
                                     csvName, jobProperties)
 
@@ -124,25 +126,25 @@ class Linkedin:
                                     percenNumber = int(
                                         comPercentage[0:comPercentage.index("%")])
                                     result = self.applyProcess(
-                                        percenNumber, offerPage)
+                                        percenNumber, jobID, offerPage)
 
-                                    # [properties, Applied, Reason, Link]
+                                    # [properties, Applied, Reason, jobID, Link]
                                     jobProperties.extend(result)
                                     self.writeCsvData(
                                         csvName, jobProperties)
 
                                 except Exception as e:
 
-                                    # [properties, Applied, Reason, Link]
+                                    # [properties, Applied, Reason, jobID, Link]
                                     jobProperties.extend(
-                                        [False, "No Apply", str(offerPage)])
+                                        [False, "No Apply", jobID, str(offerPage)])
                                     self.writeCsvData(
                                         csvName, jobProperties)
                         else:
 
                             # [properties, Applied, Reason, Link]
                             jobProperties.extend(
-                                [True, "Already applied", str(offerPage)])
+                                [True, "Already applied", jobID, str(offerPage)])
                             self.writeCsvData(csvName, jobProperties)
 
             prYellow("Category: " + urlWords[0] + "," + urlWords[1] + " applied: " + str(countApplied) +
@@ -219,7 +221,7 @@ class Linkedin:
 
         return EasyApplyButton
 
-    def applyProcess(self, percentage, offerPage):
+    def applyProcess(self, percentage, jobID, offerPage):
         applyPages = math.floor(100 / percentage)
         try:
             resumeUpload = False
@@ -254,9 +256,9 @@ class Linkedin:
             time.sleep(random.uniform(1, constants.botSpeed))
 
             # [applied?, message, link]
-            resultArray = [True, "Applied", str(offerPage)]
+            resultArray = [True, "Applied", jobID, str(offerPage)]
         except:
-            resultArray = [False, "Info", str(offerPage)]
+            resultArray = [False, "Info", jobID, str(offerPage)]
         return resultArray
 
     def writeCsvData(self, csvName: list, csvData: list):
@@ -273,7 +275,8 @@ if __name__ == '__main__':
 
     bot = Linkedin(credentials)
     start = time.time()
-    bot.linkJobApply()
+    alreadyApplied = utils.alreadyApplied()
+    bot.linkJobApply(alreadyApplied)
     end = time.time()
     prYellow("---Started: " + str(round(start)))
     prYellow("---Finished: " + str(round(end)))
