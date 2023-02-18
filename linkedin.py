@@ -8,7 +8,13 @@ import config
 import json
 
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support.ui import Select
 from utils import prRed, prYellow, prGreen
 
 from webdriver_manager.chrome import ChromeDriverManager
@@ -48,7 +54,7 @@ class Linkedin:
         except:
             prRed("Couldnt generate url, make sure you have /data folder and modified config.py file for your preferances.")
 
-    def linkJobApply(self, alreadyApplied):
+    def linkJobApply(self):
         self.generateUrls()
         countApplied = 0
         countJobs = 0
@@ -57,8 +63,10 @@ class Linkedin:
 
         for url in urlData:
             self.driver.get(url)
-
-            totalJobs = self.driver.find_element(By.XPATH, '//small').text
+            ignoredExceptions = (NoSuchElementException,
+                                 StaleElementReferenceException)
+            totalJobs = WebDriverWait(self.driver, 5, ignored_exceptions=ignoredExceptions).until(
+                EC.presence_of_element_located((By.XPATH, '//small'))).text
             totalPages = utils.jobsToPages(totalJobs)
 
             urlWords = utils.urlToKeywords(url)
@@ -70,15 +78,22 @@ class Linkedin:
                 self.driver.get(url)
                 time.sleep(random.uniform(1, constants.botSpeed))
 
-                offersPerPage = self.driver.find_elements(
-                    By.XPATH, '//li[@data-occludable-job-id]')
+                offersPerPage = WebDriverWait(self.driver, 5, ignored_exceptions=ignoredExceptions).until(
+                    EC.presence_of_all_elements_located((By.XPATH, '//li[@data-occludable-job-id]')))
+                #offersPerPage = self.driver.find_elements(By.XPATH, '//li[@data-occludable-job-id]')
 
                 offerIds = []
+
                 for offer in offersPerPage:
-                    jobId = offer.get_attribute("data-occludable-job-id")
-                    offerId = int(jobId.split(":")[-1])
-                    if offerId not in alreadyApplied:
+                    # print(offer)
+                    try:
+                        jobId = offer.get_attribute("data-occludable-job-id")
+                        offerId = int(jobId.split(":")[-1])
+                        # if offerId not in alreadyApplied:
                         offerIds.append(offerId)
+                    except StaleElementReferenceException as e:
+                        print(offer)
+                        print(e)
 
                 for jobID in offerIds:
                     offerPage = 'https://www.linkedin.com/jobs/view/' + \
@@ -99,9 +114,15 @@ class Linkedin:
                         button = self.easyApplyButton()
 
                         if button is not False:
-                            button.click()
-                            time.sleep(random.uniform(1, constants.botSpeed))
-                            countApplied += 1
+                            try:
+                                button.click()
+                                time.sleep(random.uniform(
+                                    1, constants.botSpeed))
+                                countApplied += 1
+                            except Exception as e:
+                                print(e)
+                                print(button)
+
                             try:
                                 self.driver.find_element(
                                     By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
@@ -213,8 +234,11 @@ class Linkedin:
     def easyApplyButton(self):
         try:
             time.sleep(3)
-            button = self.driver.find_element(By.XPATH,
-                                              '//button[contains(@class, "jobs-apply-button")]')
+            ignoredExceptions = (NoSuchElementException,
+                                 StaleElementReferenceException)
+            button = WebDriverWait(self.driver, 5, ignored_exceptions=ignoredExceptions).until(
+                EC.presence_of_element_located((By.XPATH, '//button[contains(@class, "jobs-apply-button")]')))
+
             EasyApplyButton = button
         except:
             EasyApplyButton = False
@@ -225,26 +249,77 @@ class Linkedin:
         applyPages = math.floor(100 / percentage)
         try:
             resumeUpload = False
-            for pages in range(applyPages-2):
-                if not resumeUpload:
+
+            for page in range(applyPages-1):
+                pageTitle = ''
+                try:
+                    pageTitle = self.driver.find_element(
+                        By.XPATH, "//h3[contains(@class, 't-16 t-bold')]").get_attribute("innerHTML").strip()
+                except Exception as e:
+                    prYellow('Warning in finding pageTitle: ' + str(e)[0:50])
+
+                if pageTitle == 'Resume':
                     try:
-                        # try finding resume button, if found, click it
                         self.driver.find_element(
                             By.CSS_SELECTOR, "button[aria-label='Choose Resume']").click()
                         time.sleep(random.uniform(1, constants.botSpeed))
                         resumeUpload = True
-                    except:
-                        print('Choose Resume button not found yet')
+                    except Exception as e:
+                        prYellow(
+                            'Warning in finding Resume: ' + str(e)[0:50])
 
-                # check if information is needed before proceding
-                # try catch for resume and select forms (input forms can be 1 by default)
-                self.driver.find_element(
-                    By.CSS_SELECTOR, "button[aria-label='Continue to next step']").click()
-                time.sleep(random.uniform(1, constants.botSpeed))
+                elif pageTitle == 'Additional Questions' or pageTitle == 'Additional':
+                    inputFields = self.driver.find_elements(
+                        By.XPATH, "//input[contains(@type, 'text')]")
 
-            self.driver.find_element(
-                By.CSS_SELECTOR, "button[aria-label='Review your application']").click()
-            time.sleep(random.uniform(1, constants.botSpeed))
+                    for inputField in inputFields:
+                        fieldValue = inputField.get_attribute('value')
+
+                        if len(fieldValue) == 0:
+                            fieldClass = inputField.get_attribute('class')
+
+                            if "text-input" in fieldClass:  # check if text field
+                                fieldId = inputField.get_attribute('id')
+
+                                if "numeric" in fieldId:  # id contains numeric
+                                    inputField.send_keys('1')
+                                    time.sleep(random.uniform(
+                                        1, constants.botSpeed))
+
+                                else:  # else field is text
+                                    inputField.send_keys('Yes')
+                                    time.sleep(random.uniform(
+                                        1, constants.botSpeed))
+
+                    dropFields = self.driver.find_elements(
+                        By.XPATH, "//select[contains(@id, 'multipleChoice')]")
+
+                    for dropField in dropFields:
+                        fieldValue = dropField.get_attribute('value')
+
+                        if fieldValue == 'Select an option':
+                            select = Select(dropField)
+                            select.select_by_index(1)
+                            time.sleep(random.uniform(1, constants.botSpeed))
+
+                    selectFields = self.driver.find_elements(
+                        By.XPATH, "//input[contains(@type, 'radio')]")
+
+                    for selectField in selectFields:
+                        fieldValue = selectField.get_attribute('value')
+
+                        if fieldValue == 'Yes':
+                            selectField.click()
+                            time.sleep(random.uniform(1, constants.botSpeed))
+
+                try:  # Next button
+                    self.driver.find_element(
+                        By.CSS_SELECTOR, "button[aria-label='Continue to next step']").click()
+                    time.sleep(random.uniform(1, constants.botSpeed))
+                except:  # review button
+                    self.driver.find_element(
+                        By.CSS_SELECTOR, "button[aria-label='Review your application']").click()
+                    time.sleep(random.uniform(1, constants.botSpeed))
 
             if config.followCompanies is False:
                 self.driver.find_element(
@@ -274,10 +349,5 @@ if __name__ == '__main__':
         credentials = json.load(credentials_file)
 
     bot = Linkedin(credentials)
-    start = time.time()
-    alreadyApplied = utils.alreadyApplied()
-    bot.linkJobApply(alreadyApplied)
-    end = time.time()
-    prYellow("---Started: " + str(round(start)))
-    prYellow("---Finished: " + str(round(end)))
-    prYellow("---Took: " + str(round((end - start)/60)) + " minute(s).")
+    #alreadyApplied = utils.alreadyApplied()
+    bot.linkJobApply()
