@@ -1,15 +1,15 @@
 # General bot settings
 
-#PRO FEATURE - browser you want the bot to run ex: ["Chrome"] or ["Firefox"]. Firefox is only supported in Pro feature
+# PRO FEATURE - browser you want the bot to run ex: ["Chrome"] or ["Firefox"]. Firefox is only supported in Pro feature
 browser = ["Chrome"]
 # Enter your Linkedin password and username below. Do not commit this file after entering these credentials.
 # Linkedin credentials
 email = ""
 password = ""
 
-#PRO FEATURE - Optional! run browser in headless mode, no browser screen will be shown it will work in background.
+# PRO FEATURE - Optional! run browser in headless mode, no browser screen will be shown it will work in background.
 headless = False
-#PRO FEATURE - Optional! If you left above credentials fields empty. For Firefox or Chrome enter profile dir to run the bot without logging in your account each time
+# PRO FEATURE - Optional! If you left above credentials fields empty. For Firefox or Chrome enter profile dir to run the bot without logging in your account each time
 # get Firefox profile path by typing following url: about:profiles
 firefoxProfileRootDir = r"/home/ongun/snap/firefox/common/.mozilla/firefox/pz0eh58h.Linkedin_bot"
 # get Chrome profile path by typing following url: chrome://version/
@@ -22,60 +22,60 @@ LinkedinBotProPasswrod = ""
 location = ["United States"]
 # keywords related with your job search
 keywords = ["Software Engineer"]
-#job experience Level - ex:  ["Internship", "Entry level" , "Associate" , "Mid-Senior level" , "Director" , "Executive"]
-experienceLevels = ["Internship", "Entry level" , "Associate" , "Mid-Senior level" , "Director" , "Executive"]
-#job posted date - ex: ["Any Time", "Past Month" , "Past Week" , "Past 24 hours"] - select only one
-datePosted = ["Any Time"]
-#job type - ex:  ["Full-time", "Part-time" , "Contract" , "Temporary", "Volunteer", "Intership", "Other"]
+# job experience Level - ex:  ["Internship", "Entry level" , "Associate" , "Mid-Senior level" , "Director" , "Executive"]
+experienceLevels = ['']
+# job posted date - ex: ["Any Time", "Past Month" , "Past Week" , "Past 24 hours"] - select only one
+datePosted = ["Past 24 hours"]
+# job type - ex:  ["Full-time", "Part-time" , "Contract" , "Temporary", "Volunteer", "Intership", "Other"]
 jobType = ["Full-time", "Contract"]
-#remote  - ex: ["On-site" , "Remote" , "Hybrid"]
+# remote  - ex: ["On-site" , "Remote" , "Hybrid"]
 remote = ["Remote"]
-#salary - ex:["$40,000+", "$60,000+", "$80,000+", "$100,000+", "$120,000+", "$140,000+", "$160,000+", "$180,000+", "$200,000+" ] - select only one
+# salary - ex:["$40,000+", "$60,000+", "$80,000+", "$100,000+", "$120,000+", "$140,000+", "$160,000+", "$180,000+", "$200,000+" ] - select only one
 salary = [""]
-#sort - ex:["Recent"] or ["Relevent"] - select only one
-sort = ["Relevant"]
-#Blacklist companies you dont want to apply - ex: ["Apple","Google"]
+# sort - ex:["Recent"] or ["Relevent"] - select only one
+sort = ["Recent"]
+# Blacklist companies you dont want to apply - ex: ["Apple","Google"]
 blacklistCompanies = []
-#Blaclist keywords in title - ex:["manager", ".Net"]
+# Blaclist keywords in title - ex:["manager", ".Net"]
 blackListTitles = []
-#Follow companies after sucessfull application True - yes, False - no
+# Follow companies after sucessfull application True - yes, False - no
 followCompanies = False
-#Below settings are for linkedin bot Pro, you can purchase monthly or yearly subscription to use them from me.
-#PRO FEAUTRE! - Output unaswered questions into a seperate text file
+# Below settings are for linkedin bot Pro, you can purchase monthly or yearly subscription to use them from me.
+# PRO FEAUTRE! - Output unaswered questions into a seperate text file
 outputSkippedQuestions = True
-#PRO FEATURE! - Use AI to fill and answer skipped questions
+# PRO FEATURE! - Use AI to fill and answer skipped questions
 useAiAutocomplete = False
-#PRO FEATURE! - Only Apply these companies -  ex: ["Apple","Google"] -  leave empty for all companies 
+# PRO FEATURE! - Only Apply these companies -  ex: ["Apple","Google"] -  leave empty for all companies
 onlyApplyCompanies = []
-#PRO FEATURE! - Only Apply titles having these keywords -  ex:["web", "remote"] - leave empty for all companies 
-onlyApplyTitles = [] 
-#PRO FEATURE! - Dont apply the job posted by the Hiring member contains this in his/her name - ex: ["adam","Sarah"]
-blockHiringMember = [] 
-#PRO FEATURE! - Only apply the job sposted by the Hiring member contains this in his/her name - ex: ["adam","Sarah"]
-onlyApplyHiringMember = [] 
-#PRO FEATURE! - Only apply jobs having less than applications - ex:["100"] will apply jobs having upto 100 applications 
+# PRO FEATURE! - Only Apply titles having these keywords -  ex:["web", "remote"] - leave empty for all companies
+onlyApplyTitles = []
+# PRO FEATURE! - Dont apply the job posted by the Hiring member contains this in his/her name - ex: ["adam","Sarah"]
+blockHiringMember = []
+# PRO FEATURE! - Only apply the job sposted by the Hiring member contains this in his/her name - ex: ["adam","Sarah"]
+onlyApplyHiringMember = []
+# PRO FEATURE! - Only apply jobs having less than applications - ex:["100"] will apply jobs having upto 100 applications
 onlyApplyMaxApplications = []
-#PRO FEATURE! - Only apply jobs having more than applications - ex:["10"] will apply jobs having more than 10 applications 
+# PRO FEATURE! - Only apply jobs having more than applications - ex:["10"] will apply jobs having more than 10 applications
 onlyApplyMinApplications = []
-#PRO FEATURE! - Only apply jobs having these keywords in the job description
+# PRO FEATURE! - Only apply jobs having these keywords in the job description
 onlyApplyJobDescription = []
-#PRO FEATURE! - Do not apply the jobs having these keywords in the job description
+# PRO FEATURE! - Do not apply the jobs having these keywords in the job description
 blockJobDescription = []
-#PRO FEATURE! - Apply companies having equal or more than employes - ex: ["100"]
+# PRO FEATURE! - Apply companies having equal or more than employes - ex: ["100"]
 onlyAppyMimEmployee = []
-#PRO FEATURE - Apply the ones linkedin is saying "you may be a goodfit"
+# PRO FEATURE - Apply the ones linkedin is saying "you may be a goodfit"
 onlyApplyLinkedinRecommending = False
-#PRO FEATURE - Only apply the ones you have skilled badge
+# PRO FEATURE - Only apply the ones you have skilled badge
 onlyApplySkilledBages = False
-#PRO FEATURE! - Save the jobs by pressing SAVE button before apply  True - yes, False - no
+# PRO FEATURE! - Save the jobs by pressing SAVE button before apply  True - yes, False - no
 saveBeforeApply = False
-#PRO FEATURE! - Sent a message to the hiring manager once you apply for the role
+# PRO FEATURE! - Sent a message to the hiring manager once you apply for the role
 messageToHiringManager = ""
-#PRO FEATURE! - List and output non Easy Apply jobs links
+# PRO FEATURE! - List and output non Easy Apply jobs links
 listNonEasyApplyJobsUrl = False
-#PRO FEATURE! - Check yes or no to all checkbox questions (True - yes, False - no), leave empty if you dont want this option
+# PRO FEATURE! - Check yes or no to all checkbox questions (True - yes, False - no), leave empty if you dont want this option
 answerAllCheckboxes = ""
-#PRO FEAUTRE! - Output file type. Can be .txt or .csv (excel) 
+# PRO FEAUTRE! - Output file type. Can be .txt or .csv (excel)
 outputFileType = [".txt"]
 
 # These settings are for running AngelCO job apply bot you need to purchase AngelCo bot obtain bot password, paste below and then run the bot.
@@ -93,7 +93,7 @@ GlobalLogicBotPassword = ""
 # AngelCO credits
 GlobalLogicEmail = ""
 GlobalLogicPassword = ""
-# Functions ex: ["Administration", "Business Development", "Business Solutions", "Content Engineering", 	
+# Functions ex: ["Administration", "Business Development", "Business Solutions", "Content Engineering",
 # Delivery Enablement", Engineering, Finance, IT Infrastructure, Legal, Marketing, People Development,
 # Process Management, Product Support, Quality Assurance,Sales, Sales Enablement,Technology, Usability and Design]
 GlobalLogicFunctions = ["Engineering"]
@@ -113,10 +113,10 @@ FirstName = "O"
 LastName = "D"
 Email = "asdsa@gmail.com"
 LinkedInProfileURL = "www.google.com"
-Phone = "" #OPTIONAL
-Location = "" #OPTIONAL
-HowDidYouHeard = "" #OPTIONAL
-ConsiderMeForFutureOffers = True #true = yes, false = no
+Phone = ""  # OPTIONAL
+Location = ""  # OPTIONAL
+HowDidYouHeard = ""  # OPTIONAL
+ConsiderMeForFutureOffers = True  # true = yes, false = no
 
- # Testing features
+# Testing features
 displayWarnings = False
